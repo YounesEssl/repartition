@@ -1,19 +1,39 @@
 /* ═══ Page ═══ */
 .page {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 24px 20px 80px;
   min-height: 100vh;
 }
 
 /* ═══ Header ═══ */
 .header {
+  max-width: 1400px;
+  margin: 0 auto 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
   flex-wrap: wrap;
+}
+
+/* ═══ Layout: sidebar left + main right ═══ */
+.layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.sidebar {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.main {
+  min-width: 0;
 }
 
 .headerLeft {
@@ -91,15 +111,15 @@
   color: var(--text);
 }
 
-/* ═══ Unassigned Pool ═══ */
+/* ═══ Unassigned Pool (vertical sidebar) ═══ */
 .pool {
   background: var(--card);
   border: 2px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 16px 20px;
-  margin-bottom: 24px;
+  padding: 16px;
   transition: all 0.2s;
   box-shadow: var(--shadow-sm);
+  min-height: 200px;
 }
 
 .pool.poolDragging {
@@ -115,22 +135,25 @@
 
 .poolHeader {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .poolTitle {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text);
 }
 
 .poolIcon {
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .poolHint {
@@ -142,9 +165,8 @@
 
 .poolChips {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* ═══ Person Chips ═══ */
@@ -209,6 +231,7 @@
   background: #FFF1F2;
   border: 1.5px solid #FECDD3;
   color: #9F1239;
+  width: 100%;
 }
 
 .chip_unassigned .chipInitial {
@@ -726,6 +749,38 @@
 }
 
 /* ═══ Responsive ═══ */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 220px 1fr;
+    gap: 14px;
+  }
+}
+
+@media (max-width: 700px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    max-height: none;
+  }
+
+  .pool {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .poolChips {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .chip_unassigned {
+    width: auto;
+  }
+}
+
 @media (max-width: 640px) {
   .page {
     padding: 16px 12px 60px;
@@ -740,8 +795,12 @@
     align-items: flex-start;
   }
 
-  .pool {
-    padding: 12px 14px;
+  .largeGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .smallGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .chaletHeader {

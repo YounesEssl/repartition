@@ -745,43 +745,50 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Unassigned pool */}
-        <UnassignedPool
-          unassigned={state.unassigned}
-          activeId={activeId}
-          isDragging={activeId !== null}
-        />
+        <div className={styles.layout}>
+          {/* Left sidebar — unassigned people */}
+          <aside className={styles.sidebar}>
+            <UnassignedPool
+              unassigned={state.unassigned}
+              activeId={activeId}
+              isDragging={activeId !== null}
+            />
+          </aside>
 
-        {/* Large chalets */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Grands Chalets</h2>
-          <div className={styles.largeGrid}>
-            {largeChalets.map((chalet) => (
-              <ChaletCard
-                key={chalet.id}
-                chalet={chalet}
-                activeId={activeId}
-                onRemovePerson={handleRemovePerson}
-              />
-            ))}
-          </div>
-        </section>
+          {/* Right — chalets */}
+          <main className={styles.main}>
+            {/* Large chalets */}
+            <section className={styles.section}>
+              <h2 className={styles.sectionTitle}>Grands Chalets</h2>
+              <div className={styles.largeGrid}>
+                {largeChalets.map((chalet) => (
+                  <ChaletCard
+                    key={chalet.id}
+                    chalet={chalet}
+                    activeId={activeId}
+                    onRemovePerson={handleRemovePerson}
+                  />
+                ))}
+              </div>
+            </section>
 
-        {/* Small chalets */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Chalets Individuels — 2 places</h2>
-          <div className={styles.smallGrid}>
-            {smallChalets.map((chalet) => (
-              <ChaletCard
-                key={chalet.id}
-                chalet={chalet}
-                activeId={activeId}
-                onRemovePerson={handleRemovePerson}
-                compact
-              />
-            ))}
-          </div>
-        </section>
+            {/* Small chalets */}
+            <section className={styles.section}>
+              <h2 className={styles.sectionTitle}>Chalets Individuels — 2 places</h2>
+              <div className={styles.smallGrid}>
+                {smallChalets.map((chalet) => (
+                  <ChaletCard
+                    key={chalet.id}
+                    chalet={chalet}
+                    activeId={activeId}
+                    onRemovePerson={handleRemovePerson}
+                    compact
+                  />
+                ))}
+              </div>
+            </section>
+          </main>
+        </div>
       </div>
 
       {/* Drag overlay */}
