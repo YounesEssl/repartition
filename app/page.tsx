@@ -511,6 +511,7 @@ export default function Home() {
     people: [],
     unassigned: [],
   });
+  const [isEditing, setIsEditing] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInitialized = useRef(false);
@@ -551,13 +552,57 @@ export default function Home() {
   );
 
   const handleStart = useCallback((input: string) => {
-    const people = parsePeople(input);
-    setState({
-      chalets: deepCloneChalets(INITIAL_CHALETS),
-      people,
-      unassigned: [...people],
+    const newPeople = parsePeople(input);
+
+    setState((prev) => {
+      if (prev.people.length > 0) {
+        // Merge: preserve existing room assignments
+        const chalets = deepCloneChalets(prev.chalets);
+        const removedPeople = prev.people.filter(
+          (p) => !newPeople.includes(p)
+        );
+
+        // Remove deleted people from rooms
+        for (const c of chalets) {
+          for (const f of c.floors) {
+            for (const r of f.rooms) {
+              r.occupants = r.occupants.filter(
+                (p) => !removedPeople.includes(p)
+              );
+            }
+          }
+        }
+
+        // Keep existing unassigned minus removed, add new people
+        const currentUnassigned = prev.unassigned.filter(
+          (p) => !removedPeople.includes(p)
+        );
+        const addedPeople = newPeople.filter(
+          (p) => !prev.people.includes(p)
+        );
+
+        return {
+          chalets,
+          people: newPeople,
+          unassigned: [...currentUnassigned, ...addedPeople],
+        };
+      }
+
+      // Fresh start
+      return {
+        chalets: deepCloneChalets(INITIAL_CHALETS),
+        people: newPeople,
+        unassigned: [...newPeople],
+      };
     });
+
+    setIsEditing(false);
     setScreen("main");
+  }, []);
+
+  const handleEditList = useCallback(() => {
+    setIsEditing(true);
+    setScreen("setup");
   }, []);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -698,7 +743,12 @@ export default function Home() {
   }
 
   if (screen === "setup") {
-    return <SetupScreen onStart={handleStart} />;
+    return (
+      <SetupScreen
+        onStart={handleStart}
+        initialInput={state.people.length > 0 ? state.people.join("\n") : undefined}
+      />
+    );
   }
 
   return (
@@ -731,7 +781,26 @@ export default function Home() {
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <button className={styles.btnReset} onClick={handleReset}>
+            <button
+              className={styles.btnReset}
+              onClick={handleEditList}
+              title="Modifier la liste"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path
+                  d="M10.5 1.5l2 2L4.5 11.5l-3 1 1-3L10.5 1.5z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+            <button
+              className={styles.btnReset}
+              onClick={handleReset}
+              title="Tout recommencer"
+            >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path
                   d="M1 7a6 6 0 1011.5-2.3M12.5 1v3.7h-3.7"

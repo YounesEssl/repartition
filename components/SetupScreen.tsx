@@ -6,10 +6,11 @@ import styles from "./SetupScreen.module.css";
 
 interface SetupScreenProps {
   onStart: (input: string) => void;
+  initialInput?: string;
 }
 
-export default function SetupScreen({ onStart }: SetupScreenProps) {
-  const [input, setInput] = useState(DEFAULT_GUESTS);
+export default function SetupScreen({ onStart, initialInput }: SetupScreenProps) {
+  const [input, setInput] = useState(initialInput ?? DEFAULT_GUESTS);
   const count = input
     .split("\n")
     .map((l) => l.trim())
@@ -57,7 +58,7 @@ export default function SetupScreen({ onStart }: SetupScreenProps) {
             onClick={() => input.trim() && onStart(input)}
             disabled={!input.trim()}
           >
-            Commencer la répartition
+            {initialInput ? "Mettre à jour la liste" : "Commencer la répartition"}
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path
                 d="M3 8h10m0 0L9 4m4 4L9 12"
