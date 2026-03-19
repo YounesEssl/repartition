@@ -16,7 +16,7 @@ import {
 } from "@dnd-kit/core";
 import type { Chalet, AppState, Room } from "@/lib/types";
 import { INITIAL_CHALETS } from "@/lib/data";
-import { parsePeople, findPersonLocation, generateExport } from "@/lib/utils";
+import { parsePeople, findPersonLocation } from "@/lib/utils";
 import SetupScreen from "@/components/SetupScreen";
 import styles from "./page.module.css";
 
@@ -404,71 +404,6 @@ function ChaletCard({
   );
 }
 
-/* ─── Done screen ─── */
-function DoneScreen({
-  chalets,
-  onReset,
-}: {
-  chalets: Chalet[];
-  onReset: () => void;
-}) {
-  const exportText = generateExport(chalets);
-  return (
-    <div className={styles.doneOverlay}>
-      <div className={styles.doneCard}>
-        <div className={styles.doneEmoji}>
-          <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-            <circle cx="32" cy="32" r="30" stroke="#16A34A" strokeWidth="3" />
-            <path
-              d="M20 33l8 8 16-18"
-              stroke="#16A34A"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
-        <h2 className={styles.doneTitle}>Répartition terminée !</h2>
-        <p className={styles.doneDesc}>
-          Tout le monde a été placé dans une chambre.
-        </p>
-        <pre className={styles.doneExport}>{exportText}</pre>
-        <div className={styles.doneActions}>
-          <button
-            className={styles.btnPrimary}
-            onClick={() => {
-              navigator.clipboard
-                .writeText(exportText)
-                .then(() => alert("Copié !"));
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect
-                x="5"
-                y="5"
-                width="9"
-                height="9"
-                rx="1.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M11 5V3.5A1.5 1.5 0 009.5 2h-6A1.5 1.5 0 002 3.5v6A1.5 1.5 0 003.5 11H5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-            </svg>
-            Copier le récap
-          </button>
-          <button className={styles.btnSecondary} onClick={onReset}>
-            Recommencer
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /* ─── Main App ─── */
 function deepCloneChalets(chalets: Chalet[]): Chalet[] {
   return chalets.map((c) => ({
@@ -722,8 +657,6 @@ export default function Home() {
   const totalPeople = state.people.length;
   const placedPeople = totalPeople - state.unassigned.length;
   const pct = totalPeople > 0 ? (placedPeople / totalPeople) * 100 : 0;
-  const allPlaced = totalPeople > 0 && state.unassigned.length === 0;
-
   const largeChalets = useMemo(
     () => state.chalets.filter((c) => c.capacity > 2),
     [state.chalets]
@@ -871,10 +804,6 @@ export default function Home() {
         ) : null}
       </DragOverlay>
 
-      {/* Done overlay */}
-      {allPlaced && (
-        <DoneScreen chalets={state.chalets} onReset={handleReset} />
-      )}
     </DndContext>
   );
 }
